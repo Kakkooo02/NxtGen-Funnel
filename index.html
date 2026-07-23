@@ -17,9 +17,11 @@
       --royal: #16295c;
       --elevated: #1e3a7a;
       --aqua: #6de2eb;
+      --aqua-light: #c8f9fc;
       --warm-grey: #efeeec;
       --white: #ffffff;
       --ink: #08092c;
+      --error: #ff7b7b;
 
       --font:
         "HK Grotesk Pro",
@@ -49,7 +51,9 @@
     }
 
     button,
-    input {
+    input,
+    select,
+    textarea {
       font: inherit;
     }
 
@@ -58,7 +62,10 @@
     }
 
     button:focus-visible,
-    input:focus-visible {
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    a:focus-visible {
       outline: 2px solid var(--aqua);
       outline-offset: 3px;
     }
@@ -87,17 +94,21 @@
       pointer-events: none;
     }
 
+    .logo-link {
+      display: block;
+      line-height: 0;
+      pointer-events: auto;
+    }
+
     .logo {
       display: block;
 
       width: clamp(155px, 16vw, 225px);
       height: auto;
-
-      pointer-events: auto;
     }
 
     /* =====================================
-       SCREENS
+       SCREEN SYSTEM
     ===================================== */
 
     .screen {
@@ -131,7 +142,8 @@
        DARK BACKGROUND
     ===================================== */
 
-    .question-screen {
+    .question-screen,
+    .form-screen {
       background:
         linear-gradient(
           145deg,
@@ -149,12 +161,6 @@
 
       pointer-events: none;
     }
-
-    /*
-      Large moving aurora fields.
-      These are intentionally oversized so
-      no hard edge becomes visible.
-    */
 
     .aurora {
       position: absolute;
@@ -234,12 +240,6 @@
         ease-in-out infinite alternate;
     }
 
-    /*
-      Soft diagonal light wash. It gives
-      the page depth without looking like
-      a separate object or orb.
-    */
-
     .light-wash {
       position: absolute;
 
@@ -269,11 +269,6 @@
         lightWashMove 10s
         ease-in-out infinite alternate;
     }
-
-    /*
-      A second colour field sits behind the
-      answer area so the page doesn't feel flat.
-    */
 
     .answer-glow {
       position: absolute;
@@ -320,7 +315,7 @@
       position: absolute;
       inset: 0;
 
-      opacity: 0.032;
+      opacity: 0.03;
 
       background-image:
         url(
@@ -344,103 +339,16 @@
       margin: 0 auto;
 
       padding:
-        calc(var(--header-height) + 34px)
+        calc(var(--header-height) + 25px)
         0
         26px;
 
       display: grid;
 
       grid-template-rows:
-        auto
-        minmax(0, 1fr);
+        minmax(0, 1fr)
+        auto;
     }
-
-    /* =====================================
-       PROGRESS
-    ===================================== */
-
-    .progress-area {
-      width: 100%;
-
-      margin-bottom:
-        clamp(20px, 3vh, 34px);
-    }
-
-    .progress-count {
-      display: flex;
-      justify-content: flex-end;
-
-      margin-bottom: 9px;
-
-      color:
-        rgba(255, 255, 255, 0.47);
-
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-    }
-
-    .progress-track {
-      width: 100%;
-      height: 3px;
-
-      overflow: hidden;
-
-      border-radius: 999px;
-
-      background:
-        rgba(255, 255, 255, 0.09);
-    }
-
-    .progress-fill {
-      position: relative;
-
-      height: 100%;
-
-      border-radius: inherit;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--aqua),
-          #d4fdff
-        );
-
-      box-shadow:
-        0 0 18px
-        rgba(109, 226, 235, 0.65);
-
-      transition:
-        width 600ms ease;
-    }
-
-    .progress-fill::after {
-      content: "";
-
-      position: absolute;
-
-      top: 0;
-      bottom: 0;
-
-      width: 55px;
-
-      left: -65px;
-
-      background:
-        linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.95),
-          transparent
-        );
-
-      animation:
-        progressSweep 2.5s linear infinite;
-    }
-
-    /* =====================================
-       QUESTION BODY
-    ===================================== */
 
     .question-body {
       min-height: 0;
@@ -451,7 +359,31 @@
       justify-content: flex-start;
 
       padding-top:
-        clamp(12px, 2.5vh, 26px);
+        clamp(8px, 1.8vh, 18px);
+    }
+
+    /* =====================================
+       QUESTION NUMBER ABOVE TITLE
+    ===================================== */
+
+    .question-number {
+      margin-bottom:
+        clamp(10px, 1.7vh, 17px);
+
+      color:
+        rgba(255, 255, 255, 0.53);
+
+      font-size:
+        clamp(10px, 0.9vw, 12px);
+
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .question-number strong {
+      color: var(--aqua);
+      font-weight: 800;
     }
 
     .question-title {
@@ -460,11 +392,10 @@
       margin:
         0
         auto
-        clamp(34px, 5.5vh, 64px);
+        clamp(35px, 5.3vh, 62px);
 
       text-align: center;
 
-      font-family: var(--font);
       font-size:
         clamp(34px, 4.35vw, 61px);
 
@@ -491,13 +422,6 @@
 
       align-content: center;
     }
-
-    /*
-      When the total number is odd, the
-      final answer spans both columns and
-      sits centrally at the same width as
-      the other answer cards.
-    */
 
     .answers.odd-count
     .answer-card:last-child {
@@ -532,6 +456,7 @@
       isolation: isolate;
 
       width: 100%;
+
       min-height:
         clamp(58px, 7.2vh, 74px);
 
@@ -708,7 +633,6 @@
 
       width: 100%;
 
-      font-family: var(--font);
       font-size:
         clamp(13px, 1.15vw, 16px);
 
@@ -790,7 +714,7 @@
     }
 
     /* =====================================
-       AUTO ADVANCE INDICATOR
+       AUTO ADVANCE
     ===================================== */
 
     .transition-progress {
@@ -832,7 +756,135 @@
     }
 
     /* =====================================
-       INSIGHT BACKGROUND
+       BOTTOM PROGRESS
+    ===================================== */
+
+    .progress-area {
+      width: 100%;
+
+      margin-top:
+        clamp(16px, 2.2vh, 25px);
+    }
+
+    .progress-section {
+      margin-bottom: 11px;
+
+      color:
+        rgba(255, 255, 255, 0.65);
+
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    /*
+      Rounded progress track with separated
+      internal segments.
+    */
+
+    .progress-track {
+      position: relative;
+
+      width: 100%;
+      height: 15px;
+
+      overflow: hidden;
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+
+      border-radius: 999px;
+
+      background:
+        rgba(255, 255, 255, 0.07);
+
+      box-shadow:
+        inset 0 2px 7px
+        rgba(0, 0, 0, 0.32),
+
+        0 0 24px
+        rgba(109, 226, 235, 0.06);
+    }
+
+    .progress-fill {
+      position: absolute;
+
+      top: 2px;
+      bottom: 2px;
+      left: 2px;
+
+      overflow: hidden;
+
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #4bcbd6,
+          var(--aqua),
+          var(--aqua-light)
+        );
+
+      box-shadow:
+        0 0 20px
+        rgba(109, 226, 235, 0.46);
+
+      transition:
+        width 650ms
+        cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .progress-fill::after {
+      content: "";
+
+      position: absolute;
+
+      top: 0;
+      bottom: 0;
+
+      width: 70px;
+
+      left: -80px;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.95),
+          transparent
+        );
+
+      animation:
+        progressSweep 2.5s linear infinite;
+    }
+
+    .progress-segments {
+      position: absolute;
+      z-index: 3;
+
+      inset: 0;
+
+      display: grid;
+      grid-template-columns:
+        repeat(15, 1fr);
+
+      pointer-events: none;
+    }
+
+    .progress-segments span {
+      border-right:
+        1px solid
+        rgba(0, 1, 37, 0.25);
+    }
+
+    .progress-segments span:last-child {
+      border-right: 0;
+    }
+
+    /* =====================================
+       INSIGHT SCREEN
     ===================================== */
 
     .insight-screen {
@@ -921,18 +973,14 @@
       margin: 0 auto;
 
       padding:
-        calc(var(--header-height) + 40px)
+        calc(var(--header-height) + 34px)
         0
-        34px;
+        30px;
 
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
-    /* =====================================
-       FROSTED INSIGHT CARD
-    ===================================== */
 
     .insight-card {
       position: relative;
@@ -1042,7 +1090,6 @@
         0
         18px;
 
-      font-family: var(--font);
       font-size:
         clamp(35px, 4.35vw, 59px);
 
@@ -1094,7 +1141,8 @@
       line-height: 1.5;
     }
 
-    .insight-action {
+    .insight-action,
+    .form-submit {
       margin-top: 26px;
 
       padding:
@@ -1120,18 +1168,14 @@
         box-shadow 180ms ease;
     }
 
-    .insight-action:hover {
-      transform:
-        translateY(-2px);
+    .insight-action:hover,
+    .form-submit:hover {
+      transform: translateY(-2px);
 
       box-shadow:
         0 18px 42px
         rgba(0, 1, 37, 0.28);
     }
-
-    /* =====================================
-       STATISTIC PANEL
-    ===================================== */
 
     .stat-panel {
       position: relative;
@@ -1198,42 +1242,12 @@
         ease-in-out infinite alternate;
     }
 
-    .stat-panel::after {
-      content: "";
-
-      position: absolute;
-
-      width: 150%;
-      height: 62%;
-
-      right: -40%;
-      bottom: -34%;
-
-      border-radius: 50%;
-
-      background:
-        linear-gradient(
-          95deg,
-          transparent,
-          rgba(39, 92, 154, 0.3),
-          rgba(109, 226, 235, 0.22),
-          transparent
-        );
-
-      filter: blur(34px);
-
-      animation:
-        statWaveMovementTwo 10s
-        ease-in-out infinite alternate;
-    }
-
     .stat-number {
       position: relative;
       z-index: 2;
 
       color: var(--aqua);
 
-      font-family: var(--font);
       font-size:
         clamp(68px, 8vw, 108px);
 
@@ -1276,1209 +1290,241 @@
     }
 
     /* =====================================
-       ANIMATIONS
+       CONTACT FORM
     ===================================== */
 
-    @keyframes screenEnter {
-      from {
-        opacity: 0;
+    .form-page {
+      position: relative;
+      z-index: 10;
 
-        transform:
-          translateX(24px)
-          scale(1.008);
-      }
+      width:
+        min(1060px, calc(100% - 44px));
 
-      to {
-        opacity: 1;
+      height: 100%;
 
-        transform:
-          translateX(0)
-          scale(1);
-      }
+      margin: 0 auto;
+
+      padding:
+        calc(var(--header-height) + 15px)
+        0
+        22px;
+
+      display: grid;
+
+      grid-template-rows:
+        minmax(0, 1fr)
+        auto;
     }
 
-    @keyframes screenLeave {
-      from {
-        opacity: 1;
-        transform: translateX(0);
-      }
+    .form-card {
+      min-height: 0;
 
-      to {
-        opacity: 0;
-        transform: translateX(-22px);
-      }
-    }
+      display: grid;
 
-    @keyframes auroraOne {
-      from {
-        transform:
-          translate3d(-7%, -8%, 0)
-          rotate(-5deg)
-          scaleX(1);
-      }
+      grid-template-columns:
+        minmax(280px, 0.72fr)
+        minmax(500px, 1.28fr);
 
-      to {
-        transform:
-          translate3d(10%, 20%, 0)
-          rotate(4deg)
-          scaleX(1.14);
-      }
-    }
+      gap:
+        clamp(35px, 5vw, 75px);
 
-    @keyframes auroraTwo {
-      from {
-        transform:
-          translate3d(10%, -8%, 0)
-          rotate(5deg)
-          scaleX(1.08);
-      }
+      align-items: center;
 
-      to {
-        transform:
-          translate3d(-12%, 14%, 0)
-          rotate(-5deg)
-          scaleX(0.96);
-      }
-    }
+      padding:
+        clamp(24px, 3vw, 42px);
 
-    @keyframes auroraThree {
-      from {
-        transform:
-          translate3d(-9%, 8%, 0)
-          rotate(3deg);
-      }
+      border:
+        1px solid
+        rgba(109, 226, 235, 0.18);
 
-      to {
-        transform:
-          translate3d(11%, -16%, 0)
-          rotate(-4deg)
-          scaleX(1.15);
-      }
-    }
+      border-radius: 30px;
 
-    @keyframes lightWashMove {
-      from {
-        transform:
-          translateX(-9%)
-          rotate(-9deg)
-          scaleY(0.9);
-      }
-
-      to {
-        transform:
-          translateX(11%)
-          rotate(-3deg)
-          scaleY(1.15);
-      }
-    }
-
-    @keyframes answerGlowMove {
-      from {
-        transform:
-          translate3d(0, -7%, 0)
-          scale(0.9);
-      }
-
-      to {
-        transform:
-          translate3d(-18%, 12%, 0)
-          scale(1.15);
-      }
-    }
-
-    @keyframes progressSweep {
-      from {
-        left: -65px;
-      }
-
-      to {
-        left:
-          calc(100% + 65px);
-      }
-    }
-
-    @keyframes answerSweep {
-      from {
-        left: -65%;
-      }
-
-      to {
-        left: 125%;
-      }
-    }
-
-    @keyframes answerZoom {
-      0% {
-        transform: scale(1);
-      }
-
-      40% {
-        transform: scale(0.985);
-      }
-
-      100% {
-        transform: scale(1.065);
-      }
-    }
-
-    @keyframes autoAdvance {
-      from {
-        width: 0;
-      }
-
-      to {
-        width: 100%;
-      }
-    }
-
-    @keyframes lightAuroraOne {
-      from {
-        transform:
-          translate3d(-7%, -8%, 0)
-          rotate(-5deg);
-      }
-
-      to {
-        transform:
-          translate3d(10%, 18%, 0)
-          rotate(4deg)
-          scaleX(1.12);
-      }
-    }
-
-    @keyframes lightAuroraTwo {
-      from {
-        transform:
-          translate3d(9%, 8%, 0)
-          rotate(4deg);
-      }
-
-      to {
-        transform:
-          translate3d(-10%, -14%, 0)
-          rotate(-5deg)
-          scaleX(1.13);
-      }
-    }
-
-    @keyframes statWaveMovement {
-      from {
-        transform:
-          translateX(-12%)
-          rotate(-5deg);
-      }
-
-      to {
-        transform:
-          translateX(13%)
-          rotate(5deg)
-          scaleY(1.25);
-      }
-    }
-
-    @keyframes statWaveMovementTwo {
-      from {
-        transform:
-          translateX(8%)
-          rotate(4deg);
-      }
-
-      to {
-        transform:
-          translateX(-12%)
-          rotate(-5deg)
-          scaleY(1.18);
-      }
-    }
-
-    /* =====================================
-       TABLET
-    ===================================== */
-
-    @media (max-width: 900px) {
-      :root {
-        --header-height: 80px;
-      }
-
-      .question-page {
-        padding-top:
-          calc(var(--header-height) + 28px);
-      }
-
-      .question-title {
-        font-size:
-          clamp(31px, 5.7vw, 49px);
-
-        margin-bottom:
-          clamp(27px, 4.5vh, 45px);
-      }
-
-      .answer-card {
-        min-height:
-          clamp(52px, 6.5vh, 64px);
-      }
-
-      .insight-inner {
-        grid-template-columns:
-          minmax(0, 1.2fr)
-          minmax(215px, 0.8fr);
-
-        gap: 27px;
-
-        padding: 36px;
-      }
-
-      .stat-panel {
-        min-height: 285px;
-      }
-    }
-
-    /* =====================================
-       MOBILE
-    ===================================== */
-
-    @media (max-width: 650px) {
-      :root {
-        --header-height: 72px;
-      }
-
-      .site-header {
-        padding:
-          8px
-          15px;
-      }
-
-      .logo {
-        width: 145px;
-      }
-
-      .question-page {
-        width:
-          calc(100% - 24px);
-
-        padding:
-          calc(var(--header-height) + 20px)
-          0
-          12px;
-      }
-
-      .progress-area {
-        margin-bottom: 12px;
-      }
-
-      .question-body {
-        padding-top: 8px;
-      }
-
-      .question-title {
-        margin:
-          0
-          auto
-          20px;
-
-        font-size:
-          clamp(27px, 8vw, 37px);
-      }
-
-      .answers,
-      .answers.single-column {
-        width: 100%;
-
-        grid-template-columns: 1fr;
-
-        gap: 7px;
-      }
-
-      .answers.odd-count
-      .answer-card:last-child {
-        grid-column: auto;
-
-        width: 100%;
-      }
-
-      .answer-card {
-        min-height:
-          clamp(39px, 5.6vh, 50px);
-
-        padding:
-          8px
-          12px;
-
-        border-radius: 13px;
-      }
-
-      .answer-text,
-      .other-label {
-        font-size:
-          clamp(11px, 3.1vw, 13px);
-      }
-
-      .answer-card.selected {
-        transform:
-          scale(1.025);
-      }
-
-      .insight-page {
-        width:
-          calc(100% - 24px);
-
-        padding:
-          calc(var(--header-height) + 18px)
-          0
-          13px;
-      }
-
-      .insight-card {
-        border-radius: 22px;
-      }
-
-      .insight-inner {
-        grid-template-columns: 1fr;
-
-        gap: 16px;
-
-        padding:
-          22px
-          18px;
-      }
-
-      .insight-title {
-        margin:
-          13px
-          0
-          10px;
-
-        font-size:
-          clamp(28px, 7.7vw, 38px);
-      }
-
-      .insight-copy {
-        font-size:
-          clamp(11px, 3vw, 13px);
-
-        line-height: 1.42;
-      }
-
-      .nxtgen-note {
-        margin-top: 12px;
-
-        padding:
-          9px
-          11px;
-
-        font-size:
-          clamp(10px, 2.7vw, 12px);
-      }
-
-      .insight-action {
-        width: 100%;
-
-        margin-top: 13px;
-
-        padding:
-          10px
-          14px;
-      }
-
-      .stat-panel {
-        min-height: 150px;
-
-        padding: 18px;
-      }
-
-      .stat-number {
-        font-size: 58px;
-      }
-
-      .stat-label {
-        max-width: 270px;
-
-        margin-top: 10px;
-
-        font-size: 11px;
-      }
-
-      .stat-source {
-        margin-top: 9px;
-
-        font-size: 6px;
-      }
-    }
-
-    /* =====================================
-       SHORT DESKTOP SCREENS
-    ===================================== */
-
-    @media (
-      max-height: 740px
-    ) and (
-      min-width: 651px
-    ) {
-      :root {
-        --header-height: 68px;
-      }
-
-      .question-page {
-        padding:
-          calc(var(--header-height) + 18px)
-          0
-          12px;
-      }
-
-      .progress-area {
-        margin-bottom: 12px;
-      }
-
-      .question-body {
-        padding-top: 6px;
-      }
-
-      .question-title {
-        margin-bottom: 24px;
-
-        font-size:
-          clamp(30px, 3.8vw, 48px);
-      }
-
-      .answers {
-        gap:
-          8px
-          14px;
-      }
-
-      .answer-card {
-        min-height: 48px;
-
-        padding:
-          7px
-          14px;
-
-        border-radius: 14px;
-      }
-
-      .insight-page {
-        padding:
-          calc(var(--header-height) + 18px)
-          0
-          14px;
-      }
-
-      .insight-inner {
-        padding:
-          28px
-          38px;
-      }
-
-      .insight-title {
-        margin:
-          14px
-          0
-          12px;
-
-        font-size:
-          clamp(31px, 3.8vw, 47px);
-      }
-
-      .nxtgen-note {
-        margin-top: 14px;
-      }
-
-      .insight-action {
-        margin-top: 15px;
-      }
-
-      .stat-panel {
-        min-height: 245px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration:
-          0.01ms !important;
-
-        animation-iteration-count:
-          1 !important;
-
-        transition-duration:
-          0.01ms !important;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <header class="site-header">
-    <img
-      class="logo"
-      src="nxtgen-logo.webp"
-      alt="NxtGen Launch"
-    >
-  </header>
-
-  <!-- QUESTION 1 -->
-
-  <section
-    class="screen question-screen active"
-    id="questionOne"
-  >
-    <div class="animated-background">
-      <div class="aurora aurora-one"></div>
-      <div class="aurora aurora-two"></div>
-      <div class="aurora aurora-three"></div>
-
-      <div class="light-wash"></div>
-      <div class="answer-glow"></div>
-
-      <div class="background-vignette"></div>
-      <div class="noise"></div>
-    </div>
-
-    <div class="question-page">
-
-      <div class="progress-area">
-        <div class="progress-count">
-          01 / 15
-        </div>
-
-        <div class="progress-track">
-          <div
-            class="progress-fill"
-            style="width: 7%;"
-          ></div>
-        </div>
-      </div>
-
-      <div class="question-body">
-
-        <h1 class="question-title">
-          What industry best describes your business?
-        </h1>
-
-        <div class="answers odd-count">
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Health, fitness or wellbeing
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Beauty or personal care
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Coaching, consulting or education
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Professional services
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Property or real estate
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Hospitality, food or beverage
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              E-commerce or retail
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Technology or startup
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card other-card"
-            id="otherAnswer"
-            type="button"
-          >
-            <span class="other-label">
-              Other
-            </span>
-
-            <input
-              class="other-input"
-              id="otherInput"
-              type="text"
-              placeholder="Type your industry"
-            >
-
-            <span class="transition-progress"></span>
-          </button>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- QUESTION 2 -->
-
-  <section
-    class="screen question-screen"
-    id="questionTwo"
-  >
-    <div class="animated-background">
-      <div class="aurora aurora-one"></div>
-      <div class="aurora aurora-two"></div>
-      <div class="aurora aurora-three"></div>
-
-      <div class="light-wash"></div>
-      <div class="answer-glow"></div>
-
-      <div class="background-vignette"></div>
-      <div class="noise"></div>
-    </div>
-
-    <div class="question-page">
-
-      <div class="progress-area">
-        <div class="progress-count">
-          02 / 15
-        </div>
-
-        <div class="progress-track">
-          <div
-            class="progress-fill"
-            style="width: 14%;"
-          ></div>
-        </div>
-      </div>
-
-      <div class="question-body">
-
-        <h1 class="question-title">
-          Who does your business primarily sell to?
-        </h1>
-
-        <div class="answers single-column">
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Individual customers
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Other businesses
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Both businesses and individual customers
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              We have not launched yet
-            </span>
-
-            <span class="transition-progress"></span>
-          </button>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- INSIGHT -->
-
-  <section
-    class="screen insight-screen"
-    id="insightScreen"
-  >
-    <div class="insight-background">
-      <div
-        class="light-aurora light-aurora-one"
-      ></div>
-
-      <div
-        class="light-aurora light-aurora-two"
-      ></div>
-    </div>
-
-    <div class="insight-page">
-
-      <div class="insight-card">
-
-        <div class="insight-inner">
-
-          <div>
-
-            <span class="stage-badge">
-              READY TO GROW
-            </span>
-
-            <h2 class="insight-title">
-              A proven offer gives you something valuable to scale.
-            </h2>
-
-            <p class="insight-copy">
-              Working harder is unlikely to be the complete answer.
-              Sustainable growth comes from building repeatable
-              systems for attracting leads, converting customers and
-              following up with opportunities consistently.
-            </p>
-
-            <div class="nxtgen-note">
-              NxtGen brings strategy, execution, follow-up systems
-              and AI-enhanced technology together, helping turn
-              growth from a collection of tasks into a connected
-              operating system.
-            </div>
-
-            <button
-              class="insight-action"
-              id="continueFromInsight"
-              type="button"
-            >
-              CONTINUE →
-            </button>
-
-          </div>
-
-          <div class="stat-panel">
-
-            <div class="stat-number">
-              88%
-            </div>
-
-            <div class="stat-label">
-              of organisations reported using AI in at least one
-              business function in 2025.
-            </div>
-
-            <div class="stat-source">
-              McKinsey Global Survey, 2025
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- QUESTION 3 -->
-
-  <section
-    class="screen question-screen"
-    id="questionThree"
-  >
-    <div class="animated-background">
-      <div class="aurora aurora-one"></div>
-      <div class="aurora aurora-two"></div>
-      <div class="aurora aurora-three"></div>
-
-      <div class="light-wash"></div>
-      <div class="answer-glow"></div>
-
-      <div class="background-vignette"></div>
-      <div class="noise"></div>
-    </div>
-
-    <div class="question-page">
-
-      <div class="progress-area">
-        <div class="progress-count">
-          05 / 15
-        </div>
-
-        <div class="progress-track">
-          <div
-            class="progress-fill"
-            style="width: 34%;"
-          ></div>
-        </div>
-      </div>
-
-      <div class="question-body">
-
-        <h1 class="question-title">
-          How is your team currently structured?
-        </h1>
-
-        <div class="answers odd-count">
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              It is mainly just me
-            </span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              Co-founder or partner, but no employees
-            </span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              1 employee
-            </span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              2–5 employees
-            </span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              6–10 employees
-            </span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              11–25 employees
-            </span>
-          </button>
-
-          <button
-            class="answer-card"
-            type="button"
-          >
-            <span class="answer-text">
-              26+ employees
-            </span>
-          </button>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <script>
-    const questionOne =
-      document.getElementById("questionOne");
-
-    const questionTwo =
-      document.getElementById("questionTwo");
-
-    const insightScreen =
-      document.getElementById("insightScreen");
-
-    const questionThree =
-      document.getElementById("questionThree");
-
-    const otherAnswer =
-      document.getElementById("otherAnswer");
-
-    const otherInput =
-      document.getElementById("otherInput");
-
-    const continueFromInsight =
-      document.getElementById(
-        "continueFromInsight"
-      );
-
-    let transitionLocked = false;
-
-    function changeScreen(
-      currentScreen,
-      nextScreen
-    ) {
-      if (transitionLocked) {
-        return;
-      }
-
-      transitionLocked = true;
-
-      currentScreen.classList.add("leaving");
-
-      window.setTimeout(() => {
-        currentScreen.classList.remove(
-          "active",
-          "leaving"
+      background:
+        linear-gradient(
+          135deg,
+          rgba(13, 26, 74, 0.7),
+          rgba(13, 26, 74, 0.35)
         );
 
-        nextScreen.classList.add("active");
+      backdrop-filter:
+        blur(25px)
+        saturate(130%);
 
-        transitionLocked = false;
-      }, 380);
+      -webkit-backdrop-filter:
+        blur(25px)
+        saturate(130%);
+
+      box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.06),
+
+        0 25px 70px
+        rgba(0, 0, 0, 0.28);
     }
 
-    function selectAnswer(
-      card,
-      currentScreen,
-      nextScreen
-    ) {
-      if (transitionLocked) {
-        return;
-      }
+    .form-intro h1 {
+      margin:
+        12px
+        0
+        17px;
 
-      const answerGroup =
-        card.closest(".answers");
+      font-size:
+        clamp(37px, 4.3vw, 62px);
 
-      answerGroup
-        .querySelectorAll(".answer-card")
-        .forEach((answer) => {
-          answer.classList.remove(
-            "selected",
-            "selecting"
-          );
-        });
-
-      void card.offsetWidth;
-
-      card.classList.add(
-        "selected",
-        "selecting"
-      );
-
-      window.setTimeout(() => {
-        changeScreen(
-          currentScreen,
-          nextScreen
-        );
-      }, 760);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.05em;
     }
 
-    questionOne
-      .querySelectorAll(
-        ".answer-card:not(.other-card)"
-      )
-      .forEach((card) => {
-        card.addEventListener(
-          "click",
-          () => {
-            selectAnswer(
-              card,
-              questionOne,
-              questionTwo
-            );
-          }
+    .form-intro p {
+      margin: 0;
+
+      color:
+        rgba(255, 255, 255, 0.67);
+
+      font-size:
+        clamp(13px, 1.1vw, 16px);
+
+      line-height: 1.55;
+    }
+
+    .form-kicker {
+      color: var(--aqua);
+
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .contact-form {
+      min-height: 0;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap:
+        13px
+        14px;
+    }
+
+    .form-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .form-field.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-field label {
+      color:
+        rgba(255, 255, 255, 0.68);
+
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .form-field input,
+    .form-field select {
+      width: 100%;
+      height: 49px;
+
+      padding:
+        0
+        14px;
+
+      border:
+        1px solid
+        rgba(109, 226, 235, 0.19);
+
+      border-radius: 13px;
+
+      color: var(--white);
+
+      background:
+        rgba(0, 1, 37, 0.43);
+
+      outline: 0;
+
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        background 180ms ease;
+    }
+
+    .form-field input::placeholder {
+      color:
+        rgba(255, 255, 255, 0.31);
+    }
+
+    .form-field select {
+      appearance: none;
+
+      background-image:
+        linear-gradient(
+          45deg,
+          transparent 50%,
+          var(--aqua) 50%
+        ),
+        linear-gradient(
+          135deg,
+          var(--aqua) 50%,
+          transparent 50%
         );
-      });
 
-    otherAnswer.addEventListener(
-      "click",
-      (event) => {
-        if (
-          event.target === otherInput
-        ) {
-          return;
-        }
+      background-position:
+        calc(100% - 17px) 21px,
+        calc(100% - 12px) 21px;
 
-        const answerGroup =
-          otherAnswer.closest(".answers");
+      background-size:
+        5px 5px,
+        5px 5px;
 
-        answerGroup
-          .querySelectorAll(".answer-card")
-          .forEach((answer) => {
-            answer.classList.remove(
-              "selected",
-              "selecting"
-            );
-          });
+      background-repeat: no-repeat;
+    }
 
-        void otherAnswer.offsetWidth;
+    .form-field select option {
+      color: var(--white);
+      background: var(--navy);
+    }
 
-        otherAnswer.classList.add(
-          "selected",
-          "selecting"
-        );
+    .form-field input:focus,
+    .form-field select:focus {
+      border-color: var(--aqua);
 
-        window.setTimeout(() => {
-          otherInput.focus();
-        }, 130);
-      }
-    );
+      background:
+        rgba(13, 26, 74, 0.74);
 
-    otherInput.addEventListener(
-      "click",
-      (event) => {
-        event.stopPropagation();
-      }
-    );
+      box-shadow:
+        0 0 0 3px
+        rgba(109, 226, 235, 0.1),
 
-    otherInput.addEventListener(
-      "keydown",
-      (event) => {
-        if (
-          event.key === "Enter" &&
-          otherInput.value.trim() !== ""
-        ) {
-          changeScreen(
-            questionOne,
-            questionTwo
-          );
-        }
-      }
-    );
+        0 0 22px
+        rgba(109, 226, 235, 0.1);
+    }
 
-    otherInput.addEventListener(
-      "blur",
-      () => {
-        if (
-          otherInput.value.trim() !== ""
-        ) {
-          window.setTimeout(() => {
-            changeScreen(
-              questionOne,
-              questionTwo
-            );
-          }, 300);
-        }
-      }
-    );
+    .consent-field {
+      grid-column: 1 / -1;
 
-    questionTwo
-      .querySelectorAll(".answer-card")
-      .forEach((card) => {
-        card.addEventListener(
-          "click",
-          () => {
-            selectAnswer(
-              card,
-              questionTwo,
-              insightScreen
-            );
-          }
-        );
-      });
+      display: flex;
+      align-items: flex-start;
 
-    continueFromInsight.addEventListener(
-      "click",
-      () => {
-        changeScreen(
-          insightScreen,
-          questionThree
-        );
-      }
-    );
+      gap: 10px;
 
-    questionThree
-      .querySelectorAll(".answer-card")
-      .forEach((card) => {
-        card.addEventListener(
-          "click",
-          () => {
-            const group =
-              card.closest(".answers");
+      padding-top: 2px;
+    }
 
-            group
-              .querySelectorAll(
-                ".answer-card"
-              )
-              .forEach((answer) => {
-                answer.classList.remove(
-                  "selected",
-                  "selecting"
-                );
-              });
+    .consent-field input {
+      flex: 0 0 auto;
 
-            void card.offsetWidth;
+      width: 17px;
+      height: 17px;
 
-            card.classList.add(
-              "selected",
-              "selecting"
-            );
-          }
-        );
-      });
-  </script>
+      margin-top: 1px;
 
-</body>
-</html>
+      accent-color
