@@ -3,692 +3,1538 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="NxtGen Growth Blueprint Quiz" />
-  <title>NxtGen Growth Blueprint</title>
+
+  <title>NxtGen Quiz Style Lab</title>
+
   <style>
     :root {
-      --bg: #070b12;
-      --panel: #0d1420;
-      --panel-2: #121c2b;
-      --text: #f7f9fc;
-      --muted: #aab5c5;
-      --line: rgba(255,255,255,.12);
-      --accent: #6cf7c4;
-      --accent-2: #43c7ff;
-      --light: #f5f7fb;
-      --light-text: #101827;
-      --danger: #ff8b8b;
-      --radius: 22px;
-      --shadow: 0 22px 70px rgba(0,0,0,.34);
+      --navy: #000125;
+      --surface: #0d1a4a;
+      --royal: #16295c;
+      --elevated: #1e3a7a;
+      --aqua: #6de2eb;
+      --amber: #e8a832;
+      --warm-grey: #efeeec;
+      --white: #ffffff;
+
+      --font:
+        "HK Grotesk Pro",
+        "HK Grotesk",
+        Arial,
+        sans-serif;
+
+      --accent: var(--aqua);
+      --radius: 24px;
+
+      --card-border: rgba(109, 226, 235, 0.18);
+      --card-background: rgba(13, 26, 74, 0.66);
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+    }
+
     body {
-      margin: 0;
       min-height: 100vh;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 12% 15%, rgba(67,199,255,.11), transparent 32%),
-        radial-gradient(circle at 88% 12%, rgba(108,247,196,.1), transparent 28%),
-        var(--bg);
-      color: var(--text);
+      margin: 0;
+      overflow-x: hidden;
+
+      font-family: var(--font);
+
+      color: var(--white);
+      background: var(--navy);
     }
 
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
+    button,
+    input {
+      font: inherit;
+    }
 
-    .app { min-height: 100vh; display: flex; flex-direction: column; }
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(18px);
-      background: rgba(7,11,18,.82);
-      border-bottom: 1px solid var(--line);
+    button {
+      cursor: pointer;
     }
-    .topbar-inner {
-      width: min(1100px, calc(100% - 32px));
-      margin: 0 auto;
-      min-height: 74px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 800;
-      letter-spacing: .02em;
-    }
-    .brand-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 11px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 0 32px rgba(108,247,196,.2);
-      position: relative;
-    }
-    .brand-mark::after {
-      content: "N";
-      position: absolute;
+
+    .ambient,
+    .grid-layer,
+    .noise-layer {
+      position: fixed;
       inset: 0;
-      display: grid;
-      place-items: center;
-      color: #071018;
-      font-weight: 900;
-    }
-    .brand-sub { color: var(--muted); font-size: 12px; font-weight: 600; }
-    .progress-wrap { width: min(420px, 48vw); }
-    .progress-meta {
-      display: flex;
-      justify-content: space-between;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 7px;
-    }
-    .progress-track {
-      height: 7px;
-      background: rgba(255,255,255,.08);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      width: 0%;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      transition: width .35s ease;
-    }
 
-    main {
-      width: min(980px, calc(100% - 32px));
-      margin: auto;
-      padding: 48px 0 70px;
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-    .screen { width: 100%; animation: fadeUp .35s ease; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: .13em;
-      font-size: 12px;
-      font-weight: 800;
-      margin-bottom: 16px;
-    }
-    .eyebrow::before { content: ""; width: 26px; height: 1px; background: currentColor; }
-    h1, h2 { margin: 0; line-height: 1.05; letter-spacing: -.035em; }
-    h1 { font-size: clamp(42px, 7vw, 76px); max-width: 850px; }
-    h2 { font-size: clamp(34px, 5vw, 56px); max-width: 850px; }
-    .lead { color: var(--muted); font-size: clamp(17px, 2vw, 21px); line-height: 1.65; max-width: 750px; margin: 24px 0 0; }
-    .hero-card {
-      padding: clamp(28px, 5vw, 58px);
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      background: linear-gradient(145deg, rgba(18,28,43,.92), rgba(9,15,24,.88));
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      position: relative;
-    }
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      right: -90px;
-      bottom: -110px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(108,247,196,.22), transparent 66%);
       pointer-events: none;
     }
-    .hero-points {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin: 34px 0;
-    }
-    .hero-point {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 17px;
-      color: var(--muted);
-      background: rgba(255,255,255,.025);
-    }
-    .hero-point strong { display: block; color: var(--text); margin-bottom: 5px; }
 
-    .question-head { margin-bottom: 28px; }
-    .instruction { color: var(--muted); margin: 15px 0 0; font-size: 15px; }
-    .options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
-    .option {
-      width: 100%;
-      min-height: 70px;
+    .ambient {
+      filter: blur(72px);
+      opacity: 0.5;
+    }
+
+    .ambient-one {
+      width: 48vw;
+      height: 48vw;
+
+      top: 8vh;
+      left: -16vw;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(109, 226, 235, 0.38),
+          transparent 68%
+        );
+
+      animation: floatOne 18s ease-in-out infinite alternate;
+    }
+
+    .ambient-two {
+      width: 45vw;
+      height: 45vw;
+
+      right: -12vw;
+      bottom: -10vh;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(30, 58, 122, 0.7),
+          transparent 70%
+        );
+
+      animation: floatTwo 22s ease-in-out infinite alternate;
+    }
+
+    .grid-layer {
+      opacity: 0;
+
+      background-image:
+        linear-gradient(
+          rgba(109, 226, 235, 0.08) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(109, 226, 235, 0.08) 1px,
+          transparent 1px
+        );
+
+      background-size: 64px 64px;
+
+      transform:
+        perspective(800px)
+        rotateX(58deg)
+        scale(1.6)
+        translateY(20%);
+
+      transform-origin: center bottom;
+
+      animation: gridMove 16s linear infinite;
+    }
+
+    .noise-layer {
+      opacity: 0.035;
+
+      background-image:
+        url(
+          "data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E"
+        );
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 20;
+
+      min-height: 108px;
+
       display: flex;
       align-items: center;
-      gap: 14px;
-      text-align: left;
-      color: var(--text);
-      background: rgba(18,28,43,.72);
-      border: 1px solid var(--line);
-      border-radius: 17px;
-      padding: 17px 18px;
-      transition: .2s ease;
+      justify-content: space-between;
+
+      gap: 24px;
+
+      padding:
+        18px
+        clamp(20px, 4vw, 64px);
     }
-    .option:hover { transform: translateY(-2px); border-color: rgba(108,247,196,.5); background: rgba(19,34,48,.95); }
-    .option.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(108,247,196,.13); background: rgba(108,247,196,.08); }
-    .choice-dot {
-      width: 23px;
-      height: 23px;
+
+    .logo {
+      display: block;
+
+      width: clamp(155px, 18vw, 250px);
+      height: auto;
+    }
+
+    .style-switcher {
+      display: flex;
+
+      gap: 7px;
+
+      padding: 6px;
+
+      overflow-x: auto;
+
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 999px;
+
+      background: rgba(0, 1, 37, 0.56);
+
+      backdrop-filter: blur(18px);
+    }
+
+    .style-button {
       flex: 0 0 auto;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.35);
+
+      padding: 10px 15px;
+
+      border: 0;
+      border-radius: 999px;
+
+      color: rgba(255, 255, 255, 0.64);
+      background: transparent;
+
+      font-size: 12px;
+
+      transition: 180ms ease;
+    }
+
+    .style-button:hover,
+    .style-button.active {
+      color: var(--navy);
+      background: var(--accent);
+    }
+
+    .page {
+      display: none;
+
+      position: relative;
+      z-index: 5;
+
+      min-height: calc(100vh - 108px);
+
+      padding:
+        16px
+        clamp(20px, 5vw, 80px)
+        42px;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .progress {
+      max-width: 1280px;
+
+      margin: 0 auto 46px;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+
+      color: rgba(255, 255, 255, 0.5);
+
+      font-size: 11px;
+      letter-spacing: 0.15em;
+    }
+
+    .progress-track {
+      height: 4px;
+
+      margin-top: 13px;
+
+      overflow: hidden;
+
+      border-radius: 999px;
+
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .progress-fill {
+      width: 9%;
+      height: 100%;
+
+      border-radius: inherit;
+
+      background: var(--accent);
+
+      box-shadow:
+        0 0 18px
+        rgba(109, 226, 235, 0.5);
+    }
+
+    .question-layout {
+      max-width: 1280px;
+
+      margin: auto;
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(260px, 0.8fr)
+        minmax(500px, 1.3fr);
+
+      gap: clamp(42px, 7vw, 110px);
+
+      align-items: start;
+    }
+
+    .eyebrow {
+      margin: 0;
+
+      color: var(--accent);
+
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+    }
+
+    h1 {
+      max-width: 620px;
+
+      margin: 18px 0 0;
+
+      font-size: clamp(40px, 5.3vw, 76px);
+      line-height: 0.99;
+      letter-spacing: -0.045em;
+      font-weight: 600;
+    }
+
+    .answers {
+      display: grid;
+      gap: 12px;
+    }
+
+    .answer {
+      position: relative;
+
+      width: 100%;
+      min-height: 68px;
+
+      display: grid;
+
+      grid-template-columns:
+        42px
+        1fr
+        28px;
+
+      gap: 14px;
+
+      align-items: center;
+
+      padding: 15px 18px;
+
+      overflow: hidden;
+
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+
+      color: var(--white);
+      background: var(--card-background);
+
+      text-align: left;
+
+      backdrop-filter: blur(18px);
+
+      box-shadow:
+        0 14px 42px
+        rgba(0, 0, 0, 0.2);
+
+      transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        background 180ms ease;
+    }
+
+    .answer::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      opacity: 0;
+
+      background:
+        linear-gradient(
+          105deg,
+          rgba(109, 226, 235, 0.17),
+          transparent 62%
+        );
+
+      transition: opacity 180ms ease;
+    }
+
+    .answer:hover {
+      transform: translateY(-3px);
+
+      border-color: rgba(109, 226, 235, 0.55);
+    }
+
+    .answer.selected {
+      transform:
+        translateY(-2px)
+        scale(1.012);
+
+      border-color: var(--accent);
+
+      background: rgba(22, 41, 92, 0.9);
+
+      box-shadow:
+        0 0 0 1px rgba(109, 226, 235, 0.12),
+        0 20px 56px rgba(0, 0, 0, 0.32),
+        0 0 34px rgba(109, 226, 235, 0.16);
+    }
+
+    .answer.selected::before {
+      opacity: 1;
+    }
+
+    .answer.animate {
+      animation: answerPress 420ms ease;
+    }
+
+    .answer-number {
+      position: relative;
+      z-index: 2;
+
+      color: rgba(255, 255, 255, 0.35);
+
+      font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+
+    .answer-label,
+    .other-wrap {
+      position: relative;
+      z-index: 2;
+
+      font-size: clamp(15px, 1.2vw, 18px);
+    }
+
+    .answer-check {
+      position: relative;
+      z-index: 2;
+
+      width: 24px;
+      height: 24px;
+
       display: grid;
       place-items: center;
-    }
-    .multi .choice-dot { border-radius: 7px; }
-    .option.selected .choice-dot { background: var(--accent); border-color: var(--accent); color: #071018; }
-    .option.selected .choice-dot::after { content: "✓"; font-size: 14px; font-weight: 900; }
-    .counter { color: var(--muted); font-size: 13px; margin-top: 12px; }
 
-    .field, .textarea, .select {
+      border-radius: 50%;
+
+      color: var(--navy);
+      background: var(--accent);
+
+      opacity: 0;
+
+      transform:
+        scale(0.3)
+        rotate(-20deg);
+
+      transition: 180ms ease;
+    }
+
+    .answer.selected .answer-check {
+      opacity: 1;
+
+      transform:
+        scale(1)
+        rotate(0);
+    }
+
+    .other-wrap {
+      display: grid;
+    }
+
+    .other-title {
+      transition: 180ms ease;
+    }
+
+    .other-input {
       width: 100%;
-      color: var(--text);
-      background: rgba(255,255,255,.045);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 15px 16px;
-      outline: none;
-    }
-    .field:focus, .textarea:focus, .select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,247,196,.1); }
-    .textarea { min-height: 140px; resize: vertical; line-height: 1.5; }
-    .conditional-field { margin-top: 18px; }
-    .label { display: block; color: var(--muted); font-size: 13px; font-weight: 700; margin: 0 0 8px; }
-    .required { color: var(--accent); }
+      max-height: 0;
 
-    .actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 28px; }
-    .action-right { display: flex; gap: 12px; margin-left: auto; }
-    .btn {
+      padding: 0;
+
+      opacity: 0;
+
       border: 0;
-      border-radius: 14px;
+      outline: 0;
+
+      color: var(--white);
+      background: transparent;
+
+      transition: 200ms ease;
+    }
+
+    .answer.selected .other-title {
+      color: var(--accent);
+
+      font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+
+    .answer.selected .other-input {
+      max-height: 34px;
+
+      padding-top: 6px;
+
+      opacity: 1;
+    }
+
+    .other-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .question-footer {
+      max-width: 1280px;
+
+      margin: 34px auto 0;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 20px;
+    }
+
+    .selection-note {
+      color: rgba(255, 255, 255, 0.44);
+
+      font-size: 12px;
+    }
+
+    .continue-button {
       padding: 15px 22px;
-      font-weight: 850;
-      letter-spacing: .025em;
-      transition: .2s ease;
+
+      border: 0;
+      border-radius: 999px;
+
+      color: var(--navy);
+      background: var(--accent);
+
+      font-weight: 700;
+
+      box-shadow:
+        0 14px 34px
+        rgba(109, 226, 235, 0.2);
+
+      transition: 180ms ease;
     }
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary { color: #071018; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
-    .btn-secondary { color: var(--text); background: rgba(255,255,255,.07); border: 1px solid var(--line); }
-    .btn-ghost { color: var(--muted); background: transparent; border: 1px solid transparent; }
-    .btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
-    .error { color: var(--danger); font-size: 14px; margin-top: 12px; min-height: 20px; }
 
-    .insight {
-      color: var(--light-text);
-      background: var(--light);
-      border-radius: 30px;
-      padding: clamp(28px, 5vw, 58px);
-      box-shadow: var(--shadow);
+    .continue-button:hover {
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 18px 42px
+        rgba(109, 226, 235, 0.28);
     }
-    .insight .eyebrow { color: #057e69; }
-    .insight p { color: #4b596c; font-size: 18px; line-height: 1.65; }
-    .insight-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 34px; align-items: center; }
-    .insight-visual { display: grid; gap: 12px; }
-    .mini-card { background: white; border: 1px solid #dfe5ee; border-radius: 17px; padding: 18px; box-shadow: 0 10px 28px rgba(30,45,65,.08); }
-    .mini-card strong { display: block; margin-bottom: 6px; }
-    .mini-card span { color: #5d6a7c; font-size: 14px; line-height: 1.45; }
-    .accent-line { width: 100%; height: 7px; border-radius: 999px; background: linear-gradient(90deg, #057e69, #1b95c9); margin-top: 10px; }
-    .insight .btn-secondary { color: #152033; border-color: #d7dee8; background: white; }
 
-    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
-    .form-group.full { grid-column: 1 / -1; }
-    .consent { display: flex; gap: 12px; align-items: flex-start; color: var(--muted); line-height: 1.45; }
-    .consent input { margin-top: 4px; accent-color: var(--accent); }
+    .insight-page {
+      overflow: hidden;
 
-    .result-header { display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: start; }
-    .pathway-badge { padding: 12px 16px; border-radius: 999px; background: rgba(108,247,196,.12); border: 1px solid rgba(108,247,196,.36); color: var(--accent); font-weight: 900; white-space: nowrap; }
-    .priority-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 30px 0; }
-    .priority { border: 1px solid var(--line); background: rgba(255,255,255,.035); border-radius: 17px; padding: 19px; }
-    .priority-number { color: var(--accent); font-size: 12px; font-weight: 900; letter-spacing: .1em; margin-bottom: 8px; }
-    .result-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-    .proposal { margin-top: 22px; color: var(--muted); line-height: 1.6; border-left: 3px solid var(--accent); padding-left: 16px; }
-    .referral { margin-top: 32px; border-top: 1px solid var(--line); padding-top: 24px; color: var(--muted); }
-    .referral h3 { color: var(--text); margin: 0 0 8px; }
-    .summary-box { margin-top: 30px; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-    .summary-row { display: grid; grid-template-columns: 190px 1fr; gap: 20px; padding: 13px 16px; border-bottom: 1px solid var(--line); font-size: 14px; }
-    .summary-row:last-child { border-bottom: 0; }
-    .summary-row strong { color: var(--muted); }
+      color: var(--navy);
+      background: var(--warm-grey);
+    }
 
-    .dev-note { margin-top: 22px; color: var(--muted); font-size: 12px; }
+    .insight-orb {
+      position: absolute;
 
-    @media (max-width: 760px) {
-      .topbar-inner { width: min(100% - 22px, 1100px); min-height: 66px; }
-      .brand-sub { display: none; }
-      .progress-wrap { width: 48vw; }
-      main { width: min(100% - 22px, 980px); padding: 26px 0 46px; align-items: flex-start; }
-      .hero-card, .insight { border-radius: 22px; }
-      .hero-points, .options, .priority-grid, .form-grid { grid-template-columns: 1fr; }
-      .insight-grid, .result-header { grid-template-columns: 1fr; }
-      .pathway-badge { width: fit-content; }
-      .actions { align-items: stretch; }
-      .action-right { width: 100%; }
-      .action-right .btn { flex: 1; }
-      .btn-ghost { padding-left: 5px; padding-right: 5px; }
-      .summary-row { grid-template-columns: 1fr; gap: 5px; }
-      .form-group.full { grid-column: auto; }
+      border-radius: 50%;
+
+      filter: blur(8px);
+
+      opacity: 0.25;
+    }
+
+    .insight-orb-one {
+      width: 340px;
+      height: 340px;
+
+      top: -80px;
+      right: 5%;
+
+      background: var(--aqua);
+    }
+
+    .insight-orb-two {
+      width: 260px;
+      height: 260px;
+
+      left: 3%;
+      bottom: -80px;
+
+      background: var(--amber);
+
+      opacity: 0.16;
+    }
+
+    .insight-container {
+      position: relative;
+      z-index: 4;
+
+      max-width: 1280px;
+
+      margin: auto;
+
+      padding-top: 18px;
+    }
+
+    .insight-kicker {
+      margin: 0 0 20px;
+
+      color: var(--royal);
+
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+    }
+
+    .insight-card {
+      min-height: 650px;
+
+      display: grid;
+
+      grid-template-columns:
+        1.05fr
+        0.95fr;
+
+      overflow: hidden;
+
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      border-radius: 34px;
+
+      background: rgba(255, 255, 255, 0.5);
+
+      backdrop-filter:
+        blur(28px)
+        saturate(130%);
+
+      box-shadow:
+        0 30px 90px
+        rgba(0, 1, 37, 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    }
+
+    .insight-copy {
+      padding: clamp(34px, 5vw, 72px);
+    }
+
+    .stage-badge {
+      display: inline-block;
+
+      padding: 8px 11px;
+
+      border-radius: 999px;
+
+      color: var(--royal);
+      background: rgba(22, 41, 92, 0.08);
+
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .insight-copy h2 {
+      margin: 24px 0 20px;
+
+      font-size: clamp(40px, 4.8vw, 68px);
+      line-height: 1;
+      letter-spacing: -0.045em;
+    }
+
+    .insight-copy > p {
+      max-width: 650px;
+
+      margin: 0;
+
+      color: rgba(0, 1, 37, 0.7);
+
+      font-size: 18px;
+      line-height: 1.62;
+    }
+
+    .connection-box {
+      margin: 32px 0;
+
+      padding-left: 18px;
+
+      border-left: 4px solid var(--aqua);
+    }
+
+    .connection-box strong {
+      display: block;
+
+      margin-bottom: 8px;
+
+      color: var(--royal);
+
+      font-size: 10px;
+      letter-spacing: 0.15em;
+    }
+
+    .connection-box p {
+      margin: 0;
+
+      color: rgba(0, 1, 37, 0.7);
+
+      line-height: 1.55;
+    }
+
+    .insight-button {
+      padding: 15px 22px;
+
+      border: 0;
+      border-radius: 999px;
+
+      color: var(--white);
+      background: var(--navy);
+
+      font-weight: 700;
+
+      box-shadow:
+        0 14px 34px
+        rgba(0, 1, 37, 0.18);
+
+      transition: 180ms ease;
+    }
+
+    .insight-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .insight-visual {
+      position: relative;
+
+      min-height: 520px;
+
+      display: grid;
+      place-items: center;
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 35% 28%,
+          rgba(109, 226, 235, 0.24),
+          transparent 30%
+        ),
+        linear-gradient(
+          145deg,
+          var(--royal),
+          var(--navy)
+        );
+    }
+
+    .ring {
+      position: absolute;
+
+      border: 1px solid rgba(109, 226, 235, 0.42);
+      border-radius: 50%;
+
+      animation: spin 20s linear infinite;
+    }
+
+    .ring-one {
+      width: 330px;
+      height: 330px;
+    }
+
+    .ring-two {
+      width: 470px;
+      height: 470px;
+
+      border-style: dashed;
+
+      animation-direction: reverse;
+      animation-duration: 29s;
+    }
+
+    .growth-core {
+      position: relative;
+      z-index: 2;
+
+      width: 160px;
+      height: 160px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 50%;
+
+      color: var(--navy);
+      background: var(--aqua);
+
+      text-align: center;
+
+      font-weight: 800;
+      letter-spacing: 0.08em;
+
+      box-shadow:
+        0 0 70px
+        rgba(109, 226, 235, 0.35);
+    }
+
+    .growth-node {
+      position: absolute;
+      z-index: 2;
+
+      padding: 10px 13px;
+
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.09);
+
+      backdrop-filter: blur(12px);
+
+      font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+
+    .node-one {
+      top: 18%;
+      left: 17%;
+    }
+
+    .node-two {
+      top: 22%;
+      right: 15%;
+    }
+
+    .node-three {
+      right: 11%;
+      bottom: 20%;
+    }
+
+    .node-four {
+      left: 19%;
+      bottom: 16%;
+    }
+
+    body[data-style="blueprint"] {
+      --radius: 12px;
+      --card-border: rgba(109, 226, 235, 0.28);
+      --card-background: rgba(13, 26, 74, 0.78);
+    }
+
+    body[data-style="blueprint"] .grid-layer {
+      opacity: 0.72;
+    }
+
+    body[data-style="blueprint"] .ambient {
+      opacity: 0.14;
+    }
+
+    body[data-style="blueprint"] .eyebrow {
+      color: var(--amber);
+    }
+
+    body[data-style="blueprint"] .progress-fill {
+      background: var(--amber);
+
+      box-shadow:
+        0 0 18px
+        rgba(232, 168, 50, 0.45);
+    }
+
+    body[data-style="blueprint"] .answer {
+      border-left: 3px solid rgba(109, 226, 235, 0.42);
+      box-shadow: none;
+    }
+
+    body[data-style="blueprint"] .answer.selected {
+      border-color: rgba(232, 168, 50, 0.7);
+      border-left-color: var(--amber);
+
+      box-shadow:
+        inset 5px 0 0
+        rgba(232, 168, 50, 0.18);
+    }
+
+    body[data-style="blueprint"] .answer.selected .answer-check {
+      background: var(--amber);
+    }
+
+    body[data-style="blueprint"] .continue-button {
+      background: var(--amber);
+      box-shadow: none;
+    }
+
+    body[data-style="blueprint"] .insight-card {
+      border-radius: 14px;
+    }
+
+    body[data-style="blueprint"] .insight-visual {
+      background-image:
+        linear-gradient(
+          rgba(109, 226, 235, 0.12) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(109, 226, 235, 0.12) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          145deg,
+          var(--royal),
+          var(--navy)
+        );
+
+      background-size:
+        32px 32px,
+        32px 32px,
+        auto;
+    }
+
+    body[data-style="liquid"] {
+      --radius: 30px;
+
+      --card-border: rgba(255, 255, 255, 0.11);
+
+      --card-background:
+        linear-gradient(
+          125deg,
+          rgba(22, 41, 92, 0.76),
+          rgba(13, 26, 74, 0.48)
+        );
+    }
+
+    body[data-style="liquid"] .ambient-one {
+      width: 58vw;
+      height: 58vw;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(109, 226, 235, 0.42),
+          rgba(22, 41, 92, 0.15) 48%,
+          transparent 72%
+        );
+
+      animation-duration: 14s;
+    }
+
+    body[data-style="liquid"] .ambient-two {
+      width: 54vw;
+      height: 54vw;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(232, 168, 50, 0.17),
+          rgba(30, 58, 122, 0.38) 50%,
+          transparent 72%
+        );
+
+      animation-duration: 17s;
+    }
+
+    body[data-style="liquid"] .answer {
+      min-height: 76px;
+
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 20px 60px rgba(0, 0, 0, 0.22);
+    }
+
+    body[data-style="liquid"] .answer:hover {
+      transform:
+        translateX(8px)
+        scale(1.01);
+    }
+
+    body[data-style="liquid"] .answer.selected {
+      transform:
+        translateX(12px)
+        scale(1.018);
+
+      background:
+        linear-gradient(
+          110deg,
+          rgba(109, 226, 235, 0.18),
+          rgba(22, 41, 92, 0.92)
+        );
+    }
+
+    body[data-style="liquid"] h1 {
+      text-shadow:
+        0 0 70px
+        rgba(109, 226, 235, 0.16);
+    }
+
+    body[data-style="liquid"] .insight-card {
+      border-radius: 42px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.72),
+          rgba(255, 255, 255, 0.34)
+        );
+    }
+
+    @keyframes floatOne {
+      from {
+        transform:
+          translate3d(0, 0, 0)
+          scale(1);
+      }
+
+      to {
+        transform:
+          translate3d(22vw, -8vh, 0)
+          scale(1.2);
+      }
+    }
+
+    @keyframes floatTwo {
+      from {
+        transform:
+          translate3d(0, 0, 0)
+          scale(1);
+      }
+
+      to {
+        transform:
+          translate3d(-18vw, -10vh, 0)
+          scale(1.15);
+      }
+    }
+
+    @keyframes gridMove {
+      from {
+        background-position:
+          0 0,
+          0 0;
+      }
+
+      to {
+        background-position:
+          64px 64px,
+          64px 64px;
+      }
+    }
+
+    @keyframes answerPress {
+      0% {
+        transform: scale(1);
+      }
+
+      45% {
+        transform: scale(0.985);
+      }
+
+      100% {
+        transform:
+          translateY(-2px)
+          scale(1.012);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 960px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .style-switcher {
+        width: 100%;
+      }
+
+      .question-layout {
+        grid-template-columns: 1fr;
+        gap: 34px;
+      }
+
+      .insight-card {
+        grid-template-columns: 1fr;
+      }
+
+      .insight-visual {
+        min-height: 450px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .topbar {
+        min-height: 140px;
+
+        padding: 16px 18px;
+      }
+
+      .logo {
+        width: 176px;
+      }
+
+      .page {
+        padding:
+          12px
+          16px
+          32px;
+      }
+
+      .progress {
+        margin-bottom: 28px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .answer {
+        min-height: 64px;
+
+        grid-template-columns:
+          30px
+          1fr
+          24px;
+
+        padding: 13px 14px;
+
+        border-radius: 18px;
+      }
+
+      .answer-number {
+        font-size: 9px;
+      }
+
+      .question-footer {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .continue-button {
+        width: 100%;
+      }
+
+      .insight-card {
+        border-radius: 24px;
+      }
+
+      .insight-copy {
+        padding: 28px 22px;
+      }
+
+      .insight-copy h2 {
+        font-size: 42px;
+      }
+
+      .insight-copy > p {
+        font-size: 16px;
+      }
+
+      .insight-visual {
+        min-height: 390px;
+      }
+
+      .ring-one {
+        width: 250px;
+        height: 250px;
+      }
+
+      .ring-two {
+        width: 340px;
+        height: 340px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+
+        transition-duration: 0.01ms !important;
+
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
-<body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="brand">
-          <div class="brand-mark" aria-hidden="true"></div>
-          <div>
-            <div>NxtGen</div>
-            <div class="brand-sub">Growth Blueprint</div>
-          </div>
+
+<body data-style="orbit">
+
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <div class="grid-layer"></div>
+  <div class="noise-layer"></div>
+
+  <header class="topbar">
+    <img
+      class="logo"
+      src="nxtgen-logo.webp"
+      alt="NxtGen Launch"
+    />
+
+    <div class="style-switcher">
+      <button
+        class="style-button active"
+        data-style="orbit"
+        type="button"
+      >
+        01 Orbit Glass
+      </button>
+
+      <button
+        class="style-button"
+        data-style="blueprint"
+        type="button"
+      >
+        02 Blueprint Grid
+      </button>
+
+      <button
+        class="style-button"
+        data-style="liquid"
+        type="button"
+      >
+        03 Liquid Depth
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <section
+      class="page question-page active"
+      id="questionPage"
+    >
+
+      <div class="progress">
+        <div class="progress-text">
+          <span>YOUR BUSINESS</span>
+          <span>01 / 15</span>
         </div>
-        <div class="progress-wrap" id="progressWrap" hidden>
-          <div class="progress-meta"><span id="sectionName">Your Business</span><span id="progressText">0%</span></div>
-          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+        <div class="progress-track">
+          <div class="progress-fill"></div>
         </div>
       </div>
-    </header>
-    <main id="appMain"></main>
-  </div>
+
+      <div class="question-layout">
+
+        <div>
+          <p class="eyebrow">
+            GROWTH BLUEPRINT
+          </p>
+
+          <h1>
+            What industry best describes your business?
+          </h1>
+        </div>
+
+        <div class="answers">
+
+          <button class="answer" type="button">
+            <span class="answer-number">01</span>
+            <span class="answer-label">
+              Health, fitness or wellbeing
+            </span>
+            <span class="answer-check">✓</span>
+          </button>
+
+          <button class="answer" type="button">
+            <span class="answer-number">02</span>
+            <span class="answer-label">
+              Beauty or personal care
+            </span>
+            <span class="answer-check">✓</span>
+          </button>
+
+          <button class="answer" type="button">
+            <span class="answer-number">03</span>
+            <span class="answer-label">
+              Coaching, consulting or education
+            </span>
+            <span class="answer-check">✓</span>
+          </button>
+
+          <button class="answer" type="button">
+            <span class="answer-number">04</span>
+            <span class="answer-label">
+              Professional services
+            </span>
+            <span class="answer-check">✓</span>
+          </button>
+
+          <button class="answer" type="button">
+            <span class="answer-number">05</span>
+            <span class="answer-label">
+              Property or real estate
+            </span>
+            <span class="answer-check">✓</span>
+          </button>
+
+          <button class="answer" type="button">
+            <span class="answer-number">06</span>
+            <span class="answer-label">
+              Hospitality, food or beverage
+            </span>
+            <span class="answer-check">✓</span>
+          </button>
+
+          <button class="answer" type="button">
+            <span class="answer-number">07</span>
+            <span class="answer-label">
+              E-commerce or retail
+            </span>
+            <span class="answer-check">✓</span>
+          </button>
+
+          <button class="answer" type="button">
+            <span class="answer-number">08</span>
+            <span class="answer-label">
+              Technology or startup
+            </span>
+            <span class="answer-check">✓</span>
+          </button>
+
+          <button
+            class="answer"
+            id="otherAnswer"
+            type="button"
+          >
+            <span class="answer-number">09</span>
+
+            <span class="other-wrap">
+              <span class="other-title">
+                Other
+              </span>
+
+              <input
+                class="other-input"
+                id="otherInput"
+                type="text"
+                placeholder="Type your industry"
+              />
+            </span>
+
+            <span class="answer-check">✓</span>
+          </button>
+
+        </div>
+      </div>
+
+      <div class="question-footer">
+        <span class="selection-note">
+          Select one answer
+        </span>
+
+        <button
+          class="continue-button"
+          id="showInsight"
+          type="button"
+        >
+          Preview insight →
+        </button>
+      </div>
+
+    </section>
+
+    <section
+      class="page insight-page"
+      id="insightPage"
+    >
+
+      <div class="insight-orb insight-orb-one"></div>
+      <div class="insight-orb insight-orb-two"></div>
+
+      <div class="insight-container">
+
+        <p class="insight-kicker">
+          YOUR BUSINESS STAGE
+        </p>
+
+        <div class="insight-card">
+
+          <div class="insight-copy">
+
+            <span class="stage-badge">
+              STAGE 3 · READY TO GROW
+            </span>
+
+            <h2>
+              A proven offer gives you something valuable to scale.
+            </h2>
+
+            <p>
+              At this stage, working harder is unlikely to be the
+              complete answer. Growth normally comes from creating a
+              repeatable system for attracting the right leads,
+              converting them into customers and following up with
+              opportunities that aren’t ready to buy immediately.
+            </p>
+
+            <div class="connection-box">
+              <strong>
+                NXTGEN CONNECTION
+              </strong>
+
+              <p>
+                NxtGen brings together strategy, marketing and sales
+                execution, follow-up systems and AI-enhanced technology
+                to help build that growth engine.
+              </p>
+            </div>
+
+            <button
+              class="insight-button"
+              id="returnToQuestion"
+              type="button"
+            >
+              CONTINUE TO MY CAPACITY →
+            </button>
+
+          </div>
+
+          <div class="insight-visual">
+
+            <div class="ring ring-one"></div>
+            <div class="ring ring-two"></div>
+
+            <div class="growth-core">
+              GROWTH
+              <br />
+              ENGINE
+            </div>
+
+            <div class="growth-node node-one">
+              LEADS
+            </div>
+
+            <div class="growth-node node-two">
+              SALES
+            </div>
+
+            <div class="growth-node node-three">
+              FOLLOW-UP
+            </div>
+
+            <div class="growth-node node-four">
+              SYSTEMS
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+  </main>
 
   <script>
-    const $ = (selector) => document.querySelector(selector);
-    const appMain = $('#appMain');
-    const progressWrap = $('#progressWrap');
-    const progressFill = $('#progressFill');
-    const progressText = $('#progressText');
-    const sectionName = $('#sectionName');
+    const body = document.body;
 
-    const state = {
-      current: 'welcome',
-      history: [],
-      answers: {},
-      result: null
-    };
+    const styleButtons =
+      document.querySelectorAll(".style-button");
 
-    const questions = {
-      q1: { section: 'Your Business', title: 'What industry best describes your business?', type: 'single', options: ['Health, fitness or wellbeing','Beauty or personal care','Coaching, consulting or education','Professional services','Property or real estate','Hospitality, food or beverage','E-commerce or retail','Technology or startup','Other'], extra: { when: ['Other'], label: 'Please specify your industry', key: 'q1_other' } },
-      q2: { section: 'Your Business', title: 'Who does your business primarily sell to?', type: 'single', options: ['Individual customers','Other businesses','Both businesses and individual customers','We have not launched yet'] },
-      q3: { section: 'Your Business', title: 'Which description sounds most like your business today?', type: 'single', options: ['I’m preparing to launch or validating my first offer','I’m making sales but need more consistency and structure','I have a proven offer and want to generate more leads and sales','I’m growing, but delivery, systems or team capacity are becoming stretched','I have an established team and want to expand, multiply or enter new markets'] },
-      q4: { section: 'Your Business', title: 'What is your current average monthly revenue?', type: 'single', options: ['Pre-revenue','Under AED 10,000','AED 10,000–30,000','AED 30,001–75,000','AED 75,001–150,000','AED 150,001–300,000','More than AED 300,000','Prefer not to say'] },
-      q5: { section: 'Your Capacity', title: 'How is your team currently structured?', type: 'single', options: ['It is mainly just me','Co-founder or partner, but no employees','1 employee','2–5 employees','6–10 employees','11–25 employees','26+ employees'] },
-      q6: { section: 'Your Capacity', title: 'Which best describes your experience with freelancers, agencies or outsourced support?', type: 'single', options: ['I have never used outsourced support','I currently have reliable long-term support','The work is generally good, but managing it takes too much time','The quality or reliability has been inconsistent','A poor experience caused me to stop outsourcing','I am planning to outsource soon'] },
-      q6a: { section: 'Your Capacity', title: 'Where have you mainly found your outsourced support?', type: 'multi', max: 6, options: ['Referrals','Upwork, Fiverr or another freelance platform','Agency','Social media or professional network','Virtual assistant or offshore provider','Other'], extra: { when: ['Other'], label: 'Please specify where you found support', key: 'q6a_other' } },
-      q6b: { section: 'Your Capacity', title: 'Approximately how much do you currently spend on outsourced support each month?', type: 'single', options: ['None currently','Under AED 2,500','AED 2,500–5,000','AED 5,001–10,000','AED 10,001–25,000','More than AED 25,000','Prefer not to say'] },
-      q7: { section: 'Your Growth', title: 'What is currently creating the biggest constraint on your growth?', type: 'multi', max: 3, options: ['I need a clearer business strategy','My offer or pricing needs improvement','My brand or online presence is not strong enough','I am not generating enough leads','Leads are not converting into customers','Marketing and content are inconsistent','Customer follow-up is too manual or inconsistent','My website or sales funnel is underperforming','My systems and processes are disorganised','I am not using automation or AI effectively','I do not have enough team capacity','Too much of the business depends on me','Customer retention or repeat business is too low','I cannot clearly track performance or results','I need help developing a digital product, platform or app','Other'], extra: { when: ['Other'], label: 'Please specify the other constraint', key: 'q7_other' } },
-      q8: { section: 'Your Growth', title: 'If you could transform one area of your business over the next 90 days, which would make the biggest difference?', type: 'single', options: ['Clarify my strategy and growth plan','Improve my offer, pricing or positioning','Strengthen my brand and online presence','Generate more qualified leads','Convert more leads into customers','Improve retention and repeat business','Introduce AI and automation into the business','Improve or connect our business systems','Build a website, app or digital product','Build or strengthen my team','Improve delivery and day-to-day operations'] },
-      q9: { section: 'Your Growth', title: 'What monthly revenue would you like the business to reach within the next 12 months?', type: 'single', options: ['Under AED 10,000','AED 10,000–30,000','AED 30,001–75,000','AED 75,001–150,000','AED 150,001–300,000','AED 300,001–500,000','More than AED 500,000','I’m not sure yet'] },
-      q10: { section: 'Your Growth', title: 'How confident are you that you have the right plan and capacity to achieve that target?', type: 'single', options: ['1 — I do not have a clear plan','2 — I have ideas, but no structured plan','3 — I have a plan, but execution is inconsistent','4 — I have a clear plan and need additional capacity','5 — I am confident in both the plan and execution'] },
-      q11: { section: 'Systems, Software & AI', title: 'Which tools or digital systems does your business currently have?', type: 'multi', max: 13, options: ['Business website','Online booking or payment system','Sales CRM','Email or marketing automation platform','Project or task-management system','AI subscription such as ChatGPT, Claude or Gemini','AI automations connected to business workflows','Industry-specific software','Custom-built website, portal or app','Reporting or analytics dashboard','WhatsApp Business','None of these','I’m not sure'], extra: { when: ['Industry-specific software','Custom-built website, portal or app'], label: 'If you use industry-specific software or a custom app, what is it?', key: 'q11_other' } },
-      q12: { section: 'Systems, Software & AI', title: 'How is AI currently being used within your business?', type: 'single', options: ['We are not currently using AI','I occasionally use tools such as ChatGPT','We use AI regularly for content or individual tasks','AI supports several areas of the business','AI is integrated into workflows, automations and decision-making'] },
-      q13: { section: 'Readiness and Context', title: 'When would you like to begin working on these priorities?', type: 'single', options: ['As soon as possible','Within the next 30 days','Within the next three months','Later this year','I am mainly exploring'] },
-      q14: { section: 'Readiness and Context', title: 'How is your business currently funded?', type: 'single', optional: true, options: ['Self-funded or bootstrapped','Funded through customer revenue','Friends and family investment','Angel or pre-seed investment','Seed or venture-capital funding','Bank finance or business loan','Government grant or accelerator funding','Currently seeking funding','Not applicable','Prefer not to say'] },
-      q15: { section: 'Readiness and Context', title: 'Is there anything else you would like us to understand about your goals, challenges or current situation?', type: 'textarea', optional: true, placeholder: 'Tell us what you are trying to achieve, what is getting in the way or where you would most value support.' }
-    };
+    const answers =
+      document.querySelectorAll(".answer");
 
-    const insightData = {
-      stage1: { eyebrow: 'Business stage insight', title: 'You’re at one of the most exciting and important points in the journey.', body: 'You do not need to build everything at once. Your priority is to validate the right offer, understand what customers will pay for and create a simple way to attract and follow up with your first leads. The right foundations now can prevent expensive changes later.', connection: 'The NxtGen OS can give you a simple place to manage leads, appointments, customer communication and your first sales pipeline from day one.', cards: [['Validate','Test the offer before adding complexity.'],['Attract','Create one clear way to generate interest.'],['Follow up','Build a simple pipeline from day one.']] },
-      stage2: { eyebrow: 'Business stage insight', title: 'You’ve proven that people will pay. Now it is time to make that repeatable.', body: 'Early sales are an important milestone, but inconsistent sales can leave the business dependent on referrals, luck or the founder constantly chasing the next customer. Your next priority is to identify what is already working and turn it into a repeatable marketing, sales and delivery process.', connection: 'NxtGen can help you create clearer priorities, strengthen your processes and introduce the support needed to execute them consistently.', cards: [['Identify','Find the activities already producing results.'],['Systemise','Turn good work into a repeatable process.'],['Execute','Keep delivery moving consistently.']] },
-      stage3: { eyebrow: 'Business stage insight', title: 'A proven offer gives you something valuable to scale.', body: 'At this stage, working harder is unlikely to be the complete answer. Growth normally comes from creating a repeatable system for attracting the right leads, converting them into customers and following up with the opportunities that are not ready to buy immediately.', connection: 'NxtGen brings together strategy, marketing and sales execution, follow-up systems and AI-enhanced technology to help build that growth engine.', cards: [['Attract','Bring in the right leads consistently.'],['Convert','Strengthen the path from interest to sale.'],['Nurture','Follow up without relying on memory.']] },
-      stage4: { eyebrow: 'Business stage insight', title: 'Growth can create a new problem: success becomes difficult to manage.', body: 'More customers often mean more administration, more pressure on delivery and more decisions landing back with the founder. At this stage, systems, delegation and team capacity become just as important as generating more demand.', connection: 'NxtGen can provide coordinated support across strategy, execution and technology without requiring you to recruit and manage several separate providers.', cards: [['Demand','Protect the growth you have created.'],['Capacity','Remove pressure from the founder.'],['Systems','Make delivery easier to manage.']] },
-      stage5: { eyebrow: 'Business stage insight', title: 'The challenge is no longer simply making more sales. It is scaling without adding unnecessary complexity.', body: 'Expansion requires stronger infrastructure, clearer reporting and systems that can support more people, customers, departments or markets. The business must be able to grow without every decision or process depending on a small number of people.', connection: 'NxtGen can support digital transformation, systems integration, specialist execution and the planning needed to enter the next stage of growth.', cards: [['Infrastructure','Build for more volume and complexity.'],['Visibility','Improve reporting and decision-making.'],['Expansion','Enter the next market with control.']] },
-      capacity: { eyebrow: 'Capacity insight', title: 'The price of support is not the same as the cost of capacity.', body: 'Hiring or outsourcing is not only about what someone is paid. It also takes time to find the right person, explain the business, brief the work, manage delivery and check the result. The right solution depends on the stage of the business, but both financial cost and management time should be considered.', connection: 'NxtGen gives entrepreneurs access to coordinated support without requiring them to recruit and manage several separate employees, freelancers or agencies.', cards: [['Visible cost','Salary, fees and subscriptions.'],['Hidden cost','Briefing, checking and coordination.'],['True capacity','Reliable output with less management.']] },
-      growth: { eyebrow: 'Growth insight', title: 'Growth becomes easier when the next priority is clear.', body: 'A strong growth plan connects where the business is today, where it wants to be and the most important action required to close that gap. Many businesses do not struggle because they lack ideas. They struggle because too many priorities compete for limited time and resources.', connection: 'A NxtGen business coach can help identify the highest-leverage priority, challenge assumptions and keep the plan moving. The NxtGen team can then support the execution instead of leaving the founder with another list of things to do.', cards: [['Today','Understand the current position.'],['90-day focus','Choose the highest-leverage priority.'],['Target','Execute toward a measurable outcome.']] },
-      systems: { eyebrow: 'Systems, software & AI insight', title: 'Having AI is not the same as operating with AI.', body: 'The advantage increasingly comes from connecting AI to real business workflows, not simply subscribing to another tool. AI can support lead qualification, personalised communication, content, follow-up, reporting, customer service and internal decision-making.', connection: 'NxtGen helps businesses identify practical AI opportunities and connect them to marketing, sales, customer service and operational systems.', cards: [['Tool','An isolated subscription.'],['Workflow','AI connected to a repeatable process.'],['Operating system','Data, automation and people working together.']] }
-    };
+    const otherAnswer =
+      document.getElementById("otherAnswer");
 
-    const progressOrder = ['q1','q2','q3','q4','q5','q6','q6a','q6b','q7','q8','q9','q10','q11','q12','q13','q14','q15','contact'];
+    const otherInput =
+      document.getElementById("otherInput");
 
-    function updateProgress(screen) {
-      const hide = ['welcome','result'].includes(screen);
-      progressWrap.hidden = hide;
-      if (hide) return;
-      const index = Math.max(0, progressOrder.indexOf(screen));
-      const percent = Math.round((index / (progressOrder.length - 1)) * 100);
-      progressFill.style.width = percent + '%';
-      progressText.textContent = percent + '%';
-      sectionName.textContent = questions[screen]?.section || (screen === 'contact' ? 'Your Growth Blueprint' : sectionForInsight(screen));
-    }
+    const questionPage =
+      document.getElementById("questionPage");
 
-    function sectionForInsight(screen) {
-      if (screen.startsWith('stage')) return 'Your Business';
-      if (screen === 'capacityInsight') return 'Your Capacity';
-      if (screen === 'growthInsight') return 'Your Growth';
-      if (screen === 'systemsInsight') return 'Systems, Software & AI';
-      return '';
-    }
+    const insightPage =
+      document.getElementById("insightPage");
 
-    function navigate(next, push = true) {
-      if (push && state.current !== next) state.history.push(state.current);
-      state.current = next;
-      render();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    const showInsight =
+      document.getElementById("showInsight");
 
-    function goBack() {
-      const prev = state.history.pop();
-      if (prev) { state.current = prev; render(); }
-    }
+    const returnToQuestion =
+      document.getElementById("returnToQuestion");
 
-    function render() {
-      updateProgress(state.current);
-      if (state.current === 'welcome') return renderWelcome();
-      if (questions[state.current]) return renderQuestion(state.current);
-      if (state.current === 'contact') return renderContact();
-      if (state.current === 'result') return renderResult();
-      if (state.current.startsWith('stage')) return renderInsight(state.current, 'CONTINUE TO MY CAPACITY', 'q5');
-      if (state.current === 'capacityInsight') return renderInsight('capacity', 'CONTINUE TO MY GROWTH DIAGNOSIS', 'q7');
-      if (state.current === 'growthInsight') return renderInsight('growth', 'CONTINUE TO SYSTEMS, SOFTWARE & AI', 'q11');
-      if (state.current === 'systemsInsight') return renderInsight('systems', 'CONTINUE TO READINESS', 'q13');
-    }
+    styleButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        styleButtons.forEach((item) => {
+          item.classList.remove("active");
+        });
 
-    function renderWelcome() {
-      appMain.innerHTML = `
-        <section class="screen hero-card">
-          <div class="eyebrow">Free business diagnosis</div>
-          <h1>Build your personalised Growth Blueprint.</h1>
-          <p class="lead">Answer a few focused questions about your business, capacity, growth priorities and systems. You’ll receive a recommended NxtGen pathway and three practical priorities.</p>
-          <div class="hero-points">
-            <div class="hero-point"><strong>3 to 5 minutes</strong>One clear question at a time.</div>
-            <div class="hero-point"><strong>Personalised</strong>Your result changes with your answers.</div>
-            <div class="hero-point"><strong>Practical</strong>Leave with a focused next step.</div>
-          </div>
-          <button class="btn btn-primary" id="startBtn">START MY GROWTH BLUEPRINT</button>
-          <div class="dev-note">This standalone demo stores answers in your browser only. Connect the submission function to GoHighLevel before production use.</div>
-        </section>`;
-      $('#startBtn').onclick = () => navigate('q1');
-    }
+        button.classList.add("active");
 
-    function optionMarkup(q, answer) {
-      return q.options.map((option) => {
-        const selected = q.type === 'multi' ? (answer || []).includes(option) : answer === option;
-        return `<button type="button" class="option ${q.type === 'multi' ? 'multi' : ''} ${selected ? 'selected' : ''}" data-option="${escapeAttr(option)}"><span class="choice-dot"></span><span>${option}</span></button>`;
-      }).join('');
-    }
+        body.dataset.style =
+          button.dataset.style;
+      });
+    });
 
-    function renderQuestion(id) {
-      const q = questions[id];
-      const answer = state.answers[id];
-      const isText = q.type === 'textarea';
-      const instruction = q.type === 'multi' ? `Select ${q.max === 3 ? 'up to three' : 'all that apply'}.` : q.optional ? 'Optional question.' : 'Select one.';
-      appMain.innerHTML = `
-        <section class="screen">
-          <div class="question-head">
-            <div class="eyebrow">${q.section}</div>
-            <h2>${q.title}</h2>
-            <p class="instruction">${instruction}</p>
-          </div>
-          ${isText ? `<textarea class="textarea" id="textAnswer" placeholder="${q.placeholder}">${escapeHtml(answer || '')}</textarea>` : `<div class="options">${optionMarkup(q, answer)}</div>`}
-          ${q.type === 'multi' ? `<div class="counter" id="counter">${(answer || []).length}${q.max ? ` of ${q.max}` : ''} selected</div>` : ''}
-          <div id="extraField"></div>
-          <div class="error" id="error"></div>
-          <div class="actions">
-            <button class="btn btn-ghost" id="backBtn">BACK</button>
-            <div class="action-right">
-              ${q.optional ? `<button class="btn btn-secondary" id="skipBtn">SKIP</button>` : ''}
-              <button class="btn btn-primary" id="nextBtn">CONTINUE</button>
-            </div>
-          </div>
-        </section>`;
+    answers.forEach((answer) => {
+      answer.addEventListener("click", (event) => {
+        if (event.target.matches("input")) {
+          return;
+        }
 
-      $('#backBtn').onclick = goBack;
-      if ($('#skipBtn')) $('#skipBtn').onclick = () => { delete state.answers[id]; deleteExtra(q); nextFrom(id); };
+        answers.forEach((item) => {
+          item.classList.remove(
+            "selected",
+            "animate"
+          );
+        });
 
-      if (isText) {
-        $('#textAnswer').addEventListener('input', e => state.answers[id] = e.target.value);
-      } else {
-        document.querySelectorAll('.option').forEach(btn => btn.addEventListener('click', () => selectOption(id, btn.dataset.option)));
-      }
-      renderExtra(q, id);
-      $('#nextBtn').onclick = () => validateAndNext(id);
-    }
+        answer.classList.add(
+          "selected",
+          "animate"
+        );
 
-    function selectOption(id, option) {
-      const q = questions[id];
-      if (q.type === 'multi') {
-        let current = Array.isArray(state.answers[id]) ? [...state.answers[id]] : [];
-        if (current.includes(option)) current = current.filter(x => x !== option);
-        else if (!q.max || current.length < q.max) current.push(option);
-        state.answers[id] = current;
-      } else {
-        state.answers[id] = option;
-      }
-      renderQuestion(id);
-    }
+        if (answer === otherAnswer) {
+          window.setTimeout(() => {
+            otherInput.focus();
+          }, 120);
+        }
+      });
+    });
 
-    function renderExtra(q, id) {
-      const host = $('#extraField');
-      if (!host || !q.extra) return;
-      const answer = state.answers[id];
-      const values = Array.isArray(answer) ? answer : [answer];
-      const show = q.extra.when.some(x => values.includes(x));
-      if (!show) { delete state.answers[q.extra.key]; host.innerHTML = ''; return; }
-      host.innerHTML = `<div class="conditional-field"><label class="label" for="extraInput">${q.extra.label}</label><input class="field" id="extraInput" value="${escapeAttr(state.answers[q.extra.key] || '')}" /></div>`;
-      $('#extraInput').addEventListener('input', e => state.answers[q.extra.key] = e.target.value);
-    }
+    otherInput.addEventListener("click", (event) => {
+      event.stopPropagation();
 
-    function deleteExtra(q) { if (q.extra) delete state.answers[q.extra.key]; }
+      answers.forEach((item) => {
+        item.classList.remove(
+          "selected",
+          "animate"
+        );
+      });
 
-    function validateAndNext(id) {
-      const q = questions[id];
-      const answer = state.answers[id];
-      const empty = q.type === 'multi' ? !answer?.length : !String(answer || '').trim();
-      if (!q.optional && empty) { $('#error').textContent = 'Please choose an answer to continue.'; return; }
-      if (q.extra) {
-        const values = Array.isArray(answer) ? answer : [answer];
-        const needsExtra = q.extra.when.some(x => values.includes(x));
-        if (needsExtra && !String(state.answers[q.extra.key] || '').trim()) { $('#error').textContent = 'Please complete the additional field.'; return; }
-      }
-      nextFrom(id);
-    }
+      otherAnswer.classList.add("selected");
+    });
 
-    function nextFrom(id) {
-      const map = { q1:'q2',q2:'q3',q3:'q4',q5:'q6',q6a:'q6b',q6b:'capacityInsight',q7:'q8',q8:'q9',q9:'q10',q10:'growthInsight',q11:'q12',q12:'systemsInsight',q13:'q14',q14:'q15',q15:'contact' };
-      if (id === 'q4') {
-        const idx = questions.q3.options.indexOf(state.answers.q3);
-        return navigate('stage' + (idx + 1));
-      }
-      if (id === 'q6') {
-        const skip = ['I have never used outsourced support','I am planning to outsource soon'].includes(state.answers.q6);
-        return navigate(skip ? 'capacityInsight' : 'q6a');
-      }
-      navigate(map[id]);
-    }
+    showInsight.addEventListener("click", () => {
+      questionPage.classList.remove("active");
+      insightPage.classList.add("active");
 
-    function renderInsight(key, buttonText, next) {
-      const d = insightData[key];
-      appMain.innerHTML = `
-        <section class="screen insight">
-          <div class="insight-grid">
-            <div>
-              <div class="eyebrow">${d.eyebrow}</div>
-              <h2>${d.title}</h2>
-              <p>${d.body}</p>
-              <p><strong>How NxtGen connects:</strong> ${d.connection}</p>
-            </div>
-            <div class="insight-visual">
-              ${d.cards.map((c,i) => `<div class="mini-card"><strong>${String(i+1).padStart(2,'0')} · ${c[0]}</strong><span>${c[1]}</span><div class="accent-line"></div></div>`).join('')}
-            </div>
-          </div>
-          <div class="actions">
-            <button class="btn btn-secondary" id="backBtn">BACK</button>
-            <button class="btn btn-primary" id="continueInsight">${buttonText}</button>
-          </div>
-        </section>`;
-      $('#backBtn').onclick = goBack;
-      $('#continueInsight').onclick = () => navigate(next);
-    }
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
 
-    function renderContact() {
-      const c = state.answers.contact || {};
-      appMain.innerHTML = `
-        <section class="screen hero-card">
-          <div class="eyebrow">Your Growth Blueprint</div>
-          <h2>Your Growth Blueprint and access to the free NxtGen OS are ready.</h2>
-          <p class="lead">Enter your details below to receive your personalised recommendations, activate your free NxtGen OS access and request your free business proposal and strategy call.</p>
-          <div class="form-grid" style="margin-top:30px">
-            ${inputField('firstName','First name',true,c.firstName)}
-            ${inputField('lastName','Last name',false,c.lastName)}
-            ${inputField('businessName','Business name',true,c.businessName)}
-            ${inputField('email','Work email',true,c.email,'email')}
-            ${inputField('phone','WhatsApp or phone number',true,c.phone,'tel')}
-            ${inputField('website','Website or social-media profile',false,c.website,'url')}
-            <div class="form-group full"><label class="label">Business emirate or market <span class="required">*</span></label>
-              <select class="select" id="location"><option value="">Select your location</option>${['Abu Dhabi','Dubai','Sharjah','Ajman','Ras Al Khaimah','Fujairah','Umm Al Quwain','Other UAE location','GCC or Middle East','Outside the region'].map(x => `<option ${c.location===x?'selected':''}>${x}</option>`).join('')}</select>
-            </div>
-            <div class="form-group full"><label class="consent"><input type="checkbox" id="consent" ${c.consent?'checked':''}><span>I consent to receive the Growth Blueprint and relevant follow-up. <span class="required">*</span></span></label></div>
-          </div>
-          <div class="error" id="error"></div>
-          <div class="actions"><button class="btn btn-ghost" id="backBtn">BACK</button><button class="btn btn-primary" id="submitBtn">SHOW ME MY GROWTH BLUEPRINT</button></div>
-        </section>`;
-      $('#backBtn').onclick = goBack;
-      $('#submitBtn').onclick = submitQuiz;
-    }
+    returnToQuestion.addEventListener("click", () => {
+      insightPage.classList.remove("active");
+      questionPage.classList.add("active");
 
-    function inputField(id,label,required,value='',type='text') {
-      return `<div class="form-group"><label class="label" for="${id}">${label}${required?' <span class="required">*</span>':''}</label><input class="field" id="${id}" type="${type}" value="${escapeAttr(value || '')}"></div>`;
-    }
-
-    function submitQuiz() {
-      const ids = ['firstName','lastName','businessName','email','phone','website','location'];
-      const contact = Object.fromEntries(ids.map(id => [id, $('#'+id).value.trim()]));
-      contact.consent = $('#consent').checked;
-      const required = ['firstName','businessName','email','phone','location'];
-      if (required.some(k => !contact[k]) || !contact.consent) { $('#error').textContent = 'Please complete all required fields and provide consent.'; return; }
-      if (!/^\S+@\S+\.\S+$/.test(contact.email)) { $('#error').textContent = 'Please enter a valid work email.'; return; }
-      state.answers.contact = contact;
-      state.result = calculateResult();
-      localStorage.setItem('nxtgenGrowthBlueprint', JSON.stringify({ answers: state.answers, result: state.result, submittedAt: new Date().toISOString() }));
-      navigate('result');
-    }
-
-    function calculateResult() {
-      const stage = questions.q3.options.indexOf(state.answers.q3) + 1;
-      const team = questions.q5.options.indexOf(state.answers.q5);
-      const urgency = questions.q13.options.indexOf(state.answers.q13);
-      const target = questions.q9.options.indexOf(state.answers.q9);
-      const confidence = questions.q10.options.indexOf(state.answers.q10) + 1;
-      let pathway = 'NxtGen OS';
-      if (stage >= 2) pathway = 'Support';
-      if (stage >= 3 || target >= 3) pathway = 'Growth';
-      if (stage >= 4 || team >= 4 || target >= 5) pathway = 'Growth Plus';
-      if (stage === 5 || team >= 6 || target >= 6) pathway = 'Enterprise';
-      if (urgency === 4 && stage <= 2) pathway = 'NxtGen OS';
-
-      const priorities = derivePriorities();
-      const explanations = {
-        'NxtGen OS':'Your answers suggest that the best first step is a simple operating foundation for leads, communication, appointments and follow-up.',
-        'Support':'Your business would benefit from practical capacity and consistent execution without the complexity of managing several disconnected providers.',
-        'Growth':'You have a clear opportunity to build a more repeatable growth engine across strategy, lead generation, conversion and follow-up.',
-        'Growth Plus':'Your answers point to a combined need for growth execution, stronger systems and additional delivery capacity.',
-        'Enterprise':'Your next stage requires coordinated transformation, stronger infrastructure, reporting and specialist execution across the business.'
-      };
-      return { pathway, priorities, explanation: explanations[pathway], confidence };
-    }
-
-    function derivePriorities() {
-      const selected = state.answers.q7 || [];
-      const primary = state.answers.q8;
-      const map = {
-        'Clarify my strategy and growth plan':'Create a focused 90-day growth plan',
-        'Improve my offer, pricing or positioning':'Strengthen your offer, pricing and positioning',
-        'Strengthen my brand and online presence':'Build a clearer, stronger market presence',
-        'Generate more qualified leads':'Create a repeatable qualified-lead system',
-        'Convert more leads into customers':'Improve conversion and sales follow-up',
-        'Improve retention and repeat business':'Build customer retention and repeat revenue',
-        'Introduce AI and automation into the business':'Connect AI to practical business workflows',
-        'Improve or connect our business systems':'Connect your core systems and data',
-        'Build a website, app or digital product':'Plan and build the right digital product',
-        'Build or strengthen my team':'Add reliable capacity and accountability',
-        'Improve delivery and day-to-day operations':'Systemise delivery and daily operations'
-      };
-      const output = [map[primary] || 'Define the highest-leverage 90-day priority'];
-      const categoryRules = [
-        [['I am not generating enough leads','Marketing and content are inconsistent','My brand or online presence is not strong enough'],'Build a consistent demand-generation engine'],
-        [['Leads are not converting into customers','Customer follow-up is too manual or inconsistent','My website or sales funnel is underperforming'],'Improve conversion, funnel performance and follow-up'],
-        [['My systems and processes are disorganised','I am not using automation or AI effectively','I cannot clearly track performance or results'],'Connect systems, automation and reporting'],
-        [['I do not have enough team capacity','Too much of the business depends on me'],'Create capacity through delegation and coordinated support'],
-        [['My offer or pricing needs improvement','I need a clearer business strategy'],'Sharpen strategy, offer and commercial focus'],
-        [['Customer retention or repeat business is too low'],'Improve retention and customer lifetime value'],
-        [['I need help developing a digital product, platform or app'],'Define and deliver the digital product roadmap']
-      ];
-      categoryRules.forEach(([triggers, text]) => { if (triggers.some(t => selected.includes(t)) && !output.includes(text)) output.push(text); });
-      if (!output.includes('Set measurable targets and review progress every week')) output.push('Set measurable targets and review progress every week');
-      return output.slice(0,3);
-    }
-
-    function renderResult() {
-      const r = state.result || calculateResult();
-      const c = state.answers.contact || {};
-      appMain.innerHTML = `
-        <section class="screen hero-card">
-          <div class="result-header">
-            <div><div class="eyebrow">Personalised result</div><h2>Your Growth Blueprint and free NxtGen OS access are ready.</h2></div>
-            <div class="pathway-badge">${r.pathway}</div>
-          </div>
-          <p class="lead">${r.explanation}</p>
-          <div class="priority-grid">${r.priorities.map((p,i) => `<div class="priority"><div class="priority-number">PRIORITY ${i+1}</div><strong>${p}</strong></div>`).join('')}</div>
-          <div class="result-actions">
-            <a class="btn btn-primary" href="#" onclick="event.preventDefault();alert('Connect this button to your GoHighLevel automatic subaccount activation URL.');">ACTIVATE MY FREE NXTGEN OS</a>
-            <a class="btn btn-secondary" href="#" onclick="event.preventDefault();alert('Connect this button to your GoHighLevel strategy call calendar URL.');">BOOK MY FREE STRATEGY CALL</a>
-            <button class="btn btn-secondary" id="downloadBtn">DOWNLOAD MY BLUEPRINT</button>
-          </div>
-          <div class="proposal">Your preliminary business proposal is being prepared from your answers. Book your strategy call so we can validate the priorities before finalising the recommended scope.</div>
-          <div class="referral"><h3>Grow together and get a month free.</h3><p>Refer another business to the NxtGen OS. When they become a paying subscriber and complete the qualifying period, you’ll both receive one additional month free.</p></div>
-          <div class="summary-box">${buildSummaryRows()}</div>
-          <div class="actions"><button class="btn btn-ghost" id="restartBtn">START AGAIN</button></div>
-          <div class="dev-note">Demo submission saved locally for ${escapeHtml(c.email || 'this visitor')}. Replace the placeholder action links and connect submitQuiz() to your GoHighLevel webhook or form endpoint.</div>
-        </section>`;
-      $('#restartBtn').onclick = () => { localStorage.removeItem('nxtgenGrowthBlueprint'); state.current='welcome'; state.history=[]; state.answers={}; state.result=null; render(); };
-      $('#downloadBtn').onclick = downloadBlueprint;
-    }
-
-    function buildSummaryRows() {
-      const rows = [
-        ['Business stage', state.answers.q3],
-        ['Current revenue', state.answers.q4],
-        ['Team structure', state.answers.q5],
-        ['Main constraints', (state.answers.q7 || []).join(', ')],
-        ['90-day transformation', state.answers.q8],
-        ['12-month revenue target', state.answers.q9],
-        ['AI usage', state.answers.q12],
-        ['Start timing', state.answers.q13]
-      ];
-      return rows.map(([a,b]) => `<div class="summary-row"><strong>${a}</strong><span>${escapeHtml(b || 'Not provided')}</span></div>`).join('');
-    }
-
-    function downloadBlueprint() {
-      const r = state.result;
-      const c = state.answers.contact || {};
-      const text = `NXTGEN GROWTH BLUEPRINT\n\nName: ${c.firstName || ''} ${c.lastName || ''}\nBusiness: ${c.businessName || ''}\nRecommended pathway: ${r.pathway}\n\nWhat your answers indicate:\n${r.explanation}\n\nYour three priorities:\n1. ${r.priorities[0]}\n2. ${r.priorities[1]}\n3. ${r.priorities[2]}\n\nPreliminary proposal:\nYour preliminary business proposal is being prepared from your answers. Book your strategy call so NxtGen can validate the priorities before finalising the recommended scope.\n`;
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'nxtgen-growth-blueprint.txt';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-    function escapeAttr(value) { return escapeHtml(value).replace(/`/g, '&#96;'); }
-
-    render();
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
   </script>
+
 </body>
 </html>
